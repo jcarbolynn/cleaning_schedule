@@ -2,30 +2,6 @@ var SpreadSheetID = "1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4"
 var SheetName = "Sheet1"
 
 
-function getData(email_sheet){
-  var jo = {};
-  var dataArray = [];
-// collecting data from 2nd Row , 1st column to last row and last    // column sheet.getLastRow()-1
-  var rows = email_sheet.getRange(2,1,email_sheet.getLastRow()-1, email_sheet.getLastColumn()).getValues();
-
-  // console.log(rows);
-
-  for(var i = 0, l= rows.length; i<l ; i++){
-    var dataRow = rows[i];
-    var record = {};
-    record['incubator'] = dataRow[0];
-    record['initials'] = dataRow[1];
-    record['email'] = dataRow[2];
-    record['last cleaned'] = dataRow[3];
-    record['next clean'] = dataRow[4];
-    dataArray.push(record);
-  }
-  jo = dataArray;
-  var result = JSON.stringify(jo);
-return jo;
-}
-
-
 function IncSchedule() {
   var ss = SpreadsheetApp.openById(SpreadSheetID);
   var inc_sched = ss.getSheetByName(SheetName);
@@ -53,12 +29,41 @@ function IncSchedule() {
 
       previously = email_json[i]['last cleaned'];
       incubator = email_json[i]['incubator'];
+      person = email_json[i]['initials'];
 
 
       MailApp.sendEmail({to: email_json[i].email, subject: "clean incubator", htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
+      
+      // adding initials so I can tell who is cleaning which incubator
+      MailApp.sendEmail({to: [MY EMAIL], subject: "clean incubator", htmlBody: person + " to clean incubator " + incubator + " this week. It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
 
       // console.log("within a weeek");
     }
   }
 
 }
+
+function getData(email_sheet){
+  var jo = {};
+  var dataArray = [];
+// collecting data from 2nd Row , 1st column to last row and last    // column sheet.getLastRow()-1
+  var rows = email_sheet.getRange(2,1,email_sheet.getLastRow()-1, email_sheet.getLastColumn()).getValues();
+
+  // console.log(rows);
+
+  for(var i = 0, l= rows.length; i<l ; i++){
+    var dataRow = rows[i];
+    var record = {};
+    record['incubator'] = dataRow[0];
+    record['initials'] = dataRow[1];
+    record['email'] = dataRow[2];
+    record['last cleaned'] = dataRow[3];
+    record['next clean'] = dataRow[4];
+    dataArray.push(record);
+  }
+  jo = dataArray;
+  var result = JSON.stringify(jo);
+return jo;
+}
+
+
