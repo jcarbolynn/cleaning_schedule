@@ -1,55 +1,52 @@
 var SpreadSheetID = "1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4"
-var SheetName = "Sheet1"
+var SheetName = "incubators"
 
 
 function IncSchedule() {
   var ss = SpreadsheetApp.openById(SpreadSheetID);
   var inc_sched = ss.getSheetByName(SheetName);
 
-  var email_json = getData(inc_sched);
+  var incubators = getData(inc_sched);
 
   const now = new Date();
   const MILLS_PER_DAY = 1000 * 60 * 60 * 24;
   var plus_week = new Date(now.getTime() + 6*MILLS_PER_DAY)
-
-
-  // console.log(now);
-  // console.log(plus_week);
-  // console.log(email_json[0]);
-  // console.log(email_json[0]['next clean']);
   
   // var dataRange = inc_sched.getRange('A:A').getValues();
   var dataRange = inc_sched.getRange(2,1,inc_sched.getLastRow()-1, inc_sched.getLastColumn()).getValues();
 
-
+  to_clean_list = [];
+  
   // l should be number of rows
   for(var i = 0, l= dataRange.length; i<l ; i++){
-    if (email_json[i]['next clean'] < plus_week){
+    if (incubators[i]['next clean'] < plus_week){
       // put email stuff in here
 
-      previously = email_json[i]['last cleaned'];
-      incubator = email_json[i]['incubator'];
-      person = email_json[i]['initials'];
+      previously = incubators[i]['last cleaned'];
+      incubator = incubators[i]['incubator'];
+      person = incubators[i]['initials'];
 
+      to_clean_list.push(incubators[i]);
 
-      MailApp.sendEmail({to: email_json[i].email, subject: "clean incubator", htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
-      
-      // adding initials so I can tell who is cleaning which incubator
-      MailApp.sendEmail({to: [MY EMAIL], subject: "clean incubator", htmlBody: person + " to clean incubator " + incubator + " this week. It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
-
-      // console.log("within a weeek");
+      // MailApp.sendEmail({to: incubators[i].email, subject: "clean incubator" + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
     }
   }
+  MailApp.sendEmail({to: "joelle.carbonell@enthalpy.com",
+                      subject: "incubators to clean",
+                      htmlBody: printStuff(to_clean_list),
+                      noReply:true})
+
+  MailApp.sendEmail({to: "espress@montrose-env.com",
+                    subject: "incubators to clean",
+                    htmlBody: printStuff(to_clean_list),
+                    noReply:true})
 
 }
 
-function getData(email_sheet){
-  var jo = {};
+function getData(incubator_schedule){
   var dataArray = [];
 // collecting data from 2nd Row , 1st column to last row and last    // column sheet.getLastRow()-1
-  var rows = email_sheet.getRange(2,1,email_sheet.getLastRow()-1, email_sheet.getLastColumn()).getValues();
-
-  // console.log(rows);
+  var rows = incubator_schedule.getRange(2,1,incubator_schedule.getLastRow()-1, incubator_schedule.getLastColumn()).getValues();
 
   for(var i = 0, l= rows.length; i<l ; i++){
     var dataRow = rows[i];
@@ -61,9 +58,20 @@ function getData(email_sheet){
     record['next clean'] = dataRow[4];
     dataArray.push(record);
   }
-  jo = dataArray;
-  var result = JSON.stringify(jo);
-return jo;
+  return dataArray;
 }
 
+function printStuff(incs){
+  string = "<html><body><br><table border=1><tr><th>Person</th><th>Incubator</th><th>Next Clean Date</th></tr></br>";
+  for (var i=0; i<incs.length; i++){
+    string = string + "<tr>";
+
+    temp = `<td> ${incs[i]['initials']} </td><td> ${incs[i]['incubator']}  </td><td> ${Utilities.formatDate(incs[i]['next clean'], 'America/New_York', 'MMMM dd, yyyy')}</td>`;
+    string = string.concat(temp);
+    
+    string = string + "</tr>";
+  }
+  string = string + "</table></body></html>";
+  return string;
+}
 
