@@ -25,18 +25,22 @@ function IncSchedule() {
       previously = incubators[i]['last cleaned'];
       incubator = incubators[i]['incubator'];
       person = incubators[i]['initials'];
+      email = incubators[i]['email'];
 
       to_clean_list.push(incubators[i]);
 
-      // MailApp.sendEmail({to: incubators[i].email, subject: "clean incubator" + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
+      if (email != ""){
+        MailApp.sendEmail({to: email, subject: "clean incubator" + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
+      }      
     }
   }
-  MailApp.sendEmail({to: "joelle.carbonell@enthalpy.com",
+  
+  MailApp.sendEmail({to: EMAIL,
                       subject: "incubators to clean",
                       htmlBody: printStuff(to_clean_list),
                       noReply:true})
 
-  MailApp.sendEmail({to: "espress@montrose-env.com",
+  MailApp.sendEmail({to: EMAIL,
                     subject: "incubators to clean",
                     htmlBody: printStuff(to_clean_list),
                     noReply:true})
