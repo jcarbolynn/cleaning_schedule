@@ -1,6 +1,13 @@
 var SpreadSheetID = "1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4"
 var SheetName = "incubators"
 
+// for html
+// <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+// var script = document.createElement('script');
+// script.src = 'https://code.jquery.com/jquery-3.6.3.min.js';
+// // Check https://jquery.com/ for the current version
+// // or //code.jquery.com/jquery-3.6.3.min.js
+// document.getElementsByTagName('head')[0].appendChild(script);
 
 function IncSchedule() {
   var ss = SpreadsheetApp.openById(SpreadSheetID);
@@ -25,21 +32,31 @@ function IncSchedule() {
       previously = incubators[i]['last cleaned'];
       incubator = incubators[i]['incubator'];
       person = incubators[i]['initials'];
+      email = incubators[i]['email'];
 
       to_clean_list.push(incubators[i]);
 
-      // MailApp.sendEmail({to: incubators[i].email, subject: "clean incubator" + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
+      if (email != ""){
+        MailApp.sendEmail({to: email, subject: "clean incubator" + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
+      }      
     }
   }
-  MailApp.sendEmail({to: "joelle.carbonell@enthalpy.com",
+
+  // if (jQuery.isEmptyObject(to_clean_list)){
+  //   console.log("not empty")
+  // }
+  
+  if (Object.keys(to_clean_list).length != 0){
+    MailApp.sendEmail({to: EMAIL,
+                        subject: "incubators to clean",
+                        htmlBody: printStuff(to_clean_list),
+                        noReply:true})
+
+    MailApp.sendEmail({to: EMAIL,
                       subject: "incubators to clean",
                       htmlBody: printStuff(to_clean_list),
                       noReply:true})
-
-  MailApp.sendEmail({to: "espress@montrose-env.com",
-                    subject: "incubators to clean",
-                    htmlBody: printStuff(to_clean_list),
-                    noReply:true})
+  }
 
 }
 
