@@ -48,9 +48,21 @@ function IncSchedule() {
   
   if (Object.keys(to_clean_list).length != 0){
     MailApp.sendEmail({to: EMAIL,
-                        subject: "incubators to clean",
-                        htmlBody: printStuff(to_clean_list),
+                        subject: "Hooray no incubators to clean",
+                        htmlBody: "",
                         noReply:true})
+
+    MailApp.sendEmail({to: EMAIL,
+                      subject: "Hooray no incubators to clean",
+                      htmlBody: "",
+                      noReply:true})
+  }
+
+  else {
+    MailApp.sendEmail({to: EMAIL,
+                    subject: "incubators to clean",
+                    htmlBody: printStuff(to_clean_list),
+                    noReply:true})
 
     MailApp.sendEmail({to: EMAIL,
                       subject: "incubators to clean",
