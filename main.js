@@ -21,6 +21,7 @@ function IncSchedule() {
   
   // var dataRange = inc_sched.getRange('A:A').getValues();
   var dataRange = inc_sched.getRange(2,1,inc_sched.getLastRow()-1, inc_sched.getLastColumn()).getValues();
+  console.log(dataRange);
 
   to_clean_list = [];
   
@@ -37,7 +38,7 @@ function IncSchedule() {
       to_clean_list.push(incubators[i]);
 
       if (email != ""){
-        MailApp.sendEmail({to: email, subject: "clean incubator" + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
+        MailApp.sendEmail({to: email, subject: "clean incubator " + incubator, htmlBody: "Please clean incubator " + incubator + " this week (or update the google sheet if you have cleaned it this month: https://docs.google.com/spreadsheets/d/1Yk6gTs7ETao4AJUHReb5GiVjgEeNJR2DSid0Emn-Yz4/edit#gid=0). It was last cleaned: " + Utilities.formatDate(previously, 'America/New_York', 'MMMM dd, yyyy'), noReply:true})
       }      
     }
   }
@@ -48,25 +49,14 @@ function IncSchedule() {
   
   if (Object.keys(to_clean_list).length != 0){
     MailApp.sendEmail({to: EMAIL,
-                        subject: "Hooray no incubators to clean",
-                        htmlBody: "",
-                        noReply:true})
-
+                      subject: "incubators to clean",
+                      htmlBody: printStuff(to_clean_list) + "<html><body><br><table border=1><tr><th>TEST</th><th>TEST</th><th>TEST</th></tr></br><tr><td> TEST2 </td><td> TEST2 </td><td> TEST2 </td></tr></table></body></html>",
+                      noReply:true})
+  }
+  else{
     MailApp.sendEmail({to: EMAIL,
                       subject: "Hooray no incubators to clean",
                       htmlBody: "",
-                      noReply:true})
-  }
-
-  else {
-    MailApp.sendEmail({to: EMAIL,
-                    subject: "incubators to clean",
-                    htmlBody: printStuff(to_clean_list),
-                    noReply:true})
-
-    MailApp.sendEmail({to: EMAIL,
-                      subject: "incubators to clean",
-                      htmlBody: printStuff(to_clean_list),
                       noReply:true})
   }
 
